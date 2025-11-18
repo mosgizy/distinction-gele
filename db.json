@@ -1,0 +1,20 @@
+{
+  "bookings": [
+    {
+      "id": "1761226288582",
+      "date": "2025-12-12",
+      "timeSlot": "2025-12-12T06:00:00.000Z",
+      "name": "asterisk",
+      "email": "asterisk@gmail.com",
+      "phone": "1234567890",
+      "notes": "jhjdfj ndfjfjfwe nhfhhfh idhfhwbhf",
+      "address": "123 lets go fishing",
+      "serviceName": "gele session",
+      "duration": 180,
+      "price": "negotiable",
+      "startTime": "2025-12-12T06:00:00.000Z",
+      "endTime": "2025-12-12T09:00:00.000Z",
+      "status": "confirmed"
+    }
+  ]
+}
