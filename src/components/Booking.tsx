@@ -3,6 +3,7 @@ import { Clock, User, Mail, Phone, CheckCircle, LocateIcon } from 'lucide-react'
 import { fetchBookings } from '@/lib/fetchBookings';
 import type { Booking, BookingData, BusinessHours, Service, TimeSlot } from '@/lib/interface';
 import { postBooking } from '@/lib/postBookings';
+import emailjs from '@emailjs/browser';
 
 type Step = 'datetime' | 'details' | 'confirmation';
 
@@ -108,6 +109,8 @@ export default function Booking(): React.JSX.Element {
 
 		await postBooking(newBooking);
 		setBookings([...bookings, newBooking]);
+		sendBookingEmail();
+		sendBookingEmail(bookingData.email);
 		setCurrentStep('confirmation');
 	};
 
@@ -122,6 +125,48 @@ export default function Booking(): React.JSX.Element {
 			address: '',
 		});
 		setCurrentStep('datetime');
+	};
+
+	const sendBookingEmail = (email?: string) => {
+		const bookingMailData = {
+			from_name: bookingData.name,
+			from_email: bookingData.email,
+			phone_number: bookingData.phone,
+			address: bookingData.address,
+			notes: bookingData.notes,
+			session_type: service.name,
+			session_date: new Date(bookingData.date).toLocaleDateString('en-US', {
+				weekday: 'long',
+				year: 'numeric',
+				month: 'long',
+				day: 'numeric',
+			}),
+			session_time: new Date(bookingData.timeSlot).toLocaleTimeString('en-US', {
+				hour: 'numeric',
+				minute: '2-digit',
+				hour12: true,
+			}),
+			session_duration: service.duration,
+			to_email: email || import.meta.env.VITE_TO_EMAIL,
+		};
+
+		emailjs
+			.send(
+				import.meta.env.VITE_SERVICE_ID,
+				import.meta.env.VITE_TEMPLATE_ID,
+				bookingMailData,
+				import.meta.env.VITE_PUBLIC_KEY
+			)
+			.then(
+				(result) => {
+					console.log('SUCCESS:', result.text);
+					console.log('Booking email sent successfully!');
+				},
+				(error) => {
+					console.log('FAILED:', error.text);
+					console.log('Error sending email');
+				}
+			);
 	};
 
 	const getTodayDate = (): string => {
@@ -413,6 +458,10 @@ export default function Booking(): React.JSX.Element {
 											<div>
 												<span className="text-gray-600">Address:</span>{' '}
 												<span className="font-medium">{bookingData.address}</span>
+											</div>
+											<div>
+												<span className="text-gray-600">Notes:</span>{' '}
+												<span className="font-medium">{bookingData.notes}</span>
 											</div>
 										</div>
 									</div>
