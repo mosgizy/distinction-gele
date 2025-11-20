@@ -29,7 +29,11 @@ const Footer = () => {
 					<div>
 						<ul className="flex items-center gap-6 mb-3">
 							<li>
-								<a href="">
+								<a
+									href="https://www.instagram.com/distinctiongele?igsh=bHVuNGd2cnJoeXc2"
+									target="_blank"
+									rel="noopener noreferrer"
+								>
 									<FontAwesomeIcon icon={faInstagram} className="text-white text-2xl" />
 								</a>
 							</li>
@@ -39,17 +43,21 @@ const Footer = () => {
 								</a>
 							</li>
 							<li>
-								<a href="">
+								<a
+									href="https://www.tiktok.com/@distinctiongele?_r=1&_t=ZS-91Woz5PCZe5"
+									target="_blank"
+									rel="noopener noreferrer"
+								>
 									<FontAwesomeIcon icon={faTiktok} className="text-white text-2xl" />
 								</a>
 							</li>
 							<li>
-								<a href="">
+								<a href="https://wa.me/+2348096587253" target="_blank" rel="noopener noreferrer">
 									<FontAwesomeIcon icon={faWhatsapp} className="text-white text-2xl" />
 								</a>
 							</li>
 						</ul>
-						<div className="text-center">Contact: 08123456789</div>
+						<div className="text-center">Contact: 08096587253</div>
 					</div>
 				</div>
 			</div>

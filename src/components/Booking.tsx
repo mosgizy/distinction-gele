@@ -4,13 +4,33 @@ import { fetchBookings } from '@/lib/fetchBookings';
 import type { Booking, BookingData, BusinessHours, Service, TimeSlot } from '@/lib/interface';
 import { postBooking } from '@/lib/postBookings';
 import emailjs from '@emailjs/browser';
+import { z } from 'zod';
 
 type Step = 'datetime' | 'details' | 'confirmation';
+
+const bookingSchema = z.object({
+	name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
+	email: z.email({ message: 'Invalid email address' }),
+	phone: z
+		.string()
+		.regex(/^\d+$/, { message: 'Phone must be numeric' })
+		.min(10, { message: 'Phone number too short' }),
+	date: z.string(), // you can refine to date type later
+	timeSlot: z.string(),
+	address: z.string().min(5, { message: 'Address must be at least 5 characters' }),
+	notes: z.string().optional(),
+});
+
+interface ValidationError {
+	field: string;
+	message: string;
+}
 
 export default function Booking(): React.JSX.Element {
 	const [currentStep, setCurrentStep] = useState<Step>('datetime');
 	const [availableSlots, setAvailableSlots] = useState<TimeSlot[]>([]);
 	const [bookings, setBookings] = useState<Booking[]>([]);
+	const [errors, setErrors] = useState<ValidationError[]>([]);
 
 	const [bookingData, setBookingData] = useState<BookingData>({
 		date: '',
@@ -106,6 +126,18 @@ export default function Booking(): React.JSX.Element {
 			endTime: endTime.toISOString(),
 			status: 'confirmed',
 		};
+
+		const result = bookingSchema.safeParse(newBooking);
+
+		if (!result.success) {
+			const formatted = result.error!.issues.map((issue) => ({
+				field: issue.path[0] as string,
+				message: issue.message,
+			}));
+
+			setErrors(formatted);
+			return;
+		}
 
 		await postBooking(newBooking);
 		setBookings([...bookings, newBooking]);
@@ -309,6 +341,11 @@ export default function Booking(): React.JSX.Element {
 											className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
 											placeholder="John Doe"
 										/>
+										{errors.find((err) => err.field === 'name') && (
+											<p className="text-sm text-red-600 mt-1">
+												{errors.find((err) => err.field === 'name')?.message}
+											</p>
+										)}
 									</div>
 
 									<div>
@@ -323,6 +360,11 @@ export default function Booking(): React.JSX.Element {
 											className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
 											placeholder="john@example.com"
 										/>
+										{errors.find((err) => err.field === 'email') && (
+											<p className="text-sm text-red-600 mt-1">
+												{errors.find((err) => err.field === 'email')?.message}
+											</p>
+										)}
 									</div>
 
 									<div>
@@ -337,6 +379,11 @@ export default function Booking(): React.JSX.Element {
 											className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
 											placeholder="+1 (555) 123-4567"
 										/>
+										{errors.find((err) => err.field === 'phone') && (
+											<p className="text-sm text-red-600 mt-1">
+												{errors.find((err) => err.field === 'phone')?.message}
+											</p>
+										)}
 									</div>
 
 									<div>
@@ -351,6 +398,11 @@ export default function Booking(): React.JSX.Element {
 											className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
 											placeholder="123 Main St, City, Country"
 										/>
+										{errors.find((err) => err.field === 'address') && (
+											<p className="text-sm text-red-600 mt-1">
+												{errors.find((err) => err.field === 'address')?.message}
+											</p>
+										)}
 									</div>
 
 									<div>
